@@ -5,16 +5,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    - name: Add User
-      run: sudo useradd -m user && sudo adduser user sudo && sudo echo 'user:root' | sudo chpasswd && sudo sed -i 's/\/bin\/sh/\/bin\/bash/g' /etc/passwd
-
     - name: Emulator Install
       run: sudo apt install linux-modules-extra-`uname -r`
     - run: sudo modprobe binder_linux devices="binder,hwbinder,vndbinder"
     - run: wget https://raw.githubusercontent.com/raiyan088/FbCreator/refs/heads/main/Dockerfile
     - run: wget -O system.tar https://raw.githubusercontent.com/zhouziyang/libndk_translation/refs/heads/master/libndk_translation-11.0.0.tar
     - run: sudo docker build . -t redroid:11.0.0-nb
-    - run: sudo docker run -itd --rm --privileged -v ~/data11-nb:/data -p 5555:5555 redroid:11.0.0-nb ro.product.model="Samsung Galaxy S10"
+    - run: sudo docker run -itd --rm --privileged -v ~/data11-nb:/data -p 5555:5555 --name emulator redroid:11.0.0-nb ro.product.model="Samsung Galaxy S10"
 
 
     - name: Node Js
@@ -23,6 +20,7 @@ jobs:
     - run: npm install express fs
     - run: sudo chmod 777 adb
     - run: node linux.js
+    - run: ls
 
     - name: Ngrok Install
       run: curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list && sudo apt update && sudo apt install ngrok
